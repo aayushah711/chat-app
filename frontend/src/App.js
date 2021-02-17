@@ -1,26 +1,16 @@
-// Import React and Component
-import React from "react";
-// Import CSS from App.css
-import styles from "./App.module.css";
-import { io } from "socket.io-client";
+import React, { useState } from "react";
+import ChatWindow from "./ChatWindow";
+import EnterName from "./EnterName";
 
 const App = () => {
-    const socket = io("http://localhost:5000");
-    socket.on("connect", () => {
-        console.log("socket is connected", socket.id);
-    });
+    const [name, setName] = useState("");
+    const [chatroomId, setChatroomId] = useState("");
 
-    return (
-        <div className="container p-b-md p-r-md p-l-md">
-            <div className={styles["chat-window"]}>
-                <ul className={styles.messages}></ul>
-                <form className={styles.form}>
-                    <input className={styles.input} autoComplete="off" />
-                    <button>Send</button>
-                </form>
-            </div>
-        </div>
-    );
+    if (name) {
+        return <ChatWindow name={name} chatroomId={chatroomId} />;
+    } else {
+        return <EnterName setName={setName} setChatroomId={setChatroomId} />;
+    }
 };
 
 export default App;
