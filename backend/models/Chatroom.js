@@ -10,6 +10,10 @@ const chatroomSchema = new mongoose.Schema(
             type: Array,
             required: true,
         },
+        serviceWorkerTokens: {
+            type: Array,
+            required: true,
+        },
     },
 
     { versionKey: false }

@@ -1,0 +1,29 @@
+.messages {
+    margin: 5px 30px 5px 5px;
+    padding: 10px;
+    padding-bottom: 0px;
+    width: fit-content;
+    border-radius: 20px 20px 20px 0px;
+    background-color: white;
+    float: left;
+}
+.self-message {
+    align-self: flex-end;
+    margin: 5px 5px 5px 30px;
+    border-radius: 20px 20px 0px 20px;
+    background-color: #2980b9;
+    color: white;
+}
+.name-time {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+.time {
+    font-size: xx-small;
+    font-style: italic;
+    padding: 0;
+    margin: 0;
+    margin-left: 10px;
+    float: right;
+}

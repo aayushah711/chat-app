@@ -1,70 +1,71 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./ChatWindow.module.css";
 import { io } from "socket.io-client";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setName, getChats } from "./redux/actions";
+import Chat from "./Chat";
 
 const socket = io("http://localhost:5000");
 
-export default ({ name, chatroomId }) => {
+export default ({ name, chatroomId, chatroomName }) => {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
+    const dispatch = useDispatch();
+    const messageContainer = useRef(null);
 
     useEffect(() => {
-        axios({
-            method: "post",
-            url: "http://localhost:5000/api/chat/allChats",
-            data: {
-                chatroomId: chatroomId,
-            },
-        }).then((res) => {
-            setMessages(res.data.chats);
-            window.scroll({
-                top: document.body.scrollHeight,
-                behavior: "smooth",
-            });
+        dispatch(getChats(chatroomId)).then((res) => {
+            setMessages(res && res.chats);
+            scrollWindow();
         });
     }, []);
 
     useEffect(() => {
         socket.on("chat message", (msg) => {
             setMessages([...messages, msg]);
-            window.scroll({
-                top: document.body.scrollHeight,
-                behavior: "smooth",
-            });
+            scrollWindow();
         });
     }, [messages]);
 
+    const scrollWindow = () => {
+        let div = document.querySelector("#messageContainer");
+        div.scrollTop = div.scrollHeight;
+    };
+
     const onSubmit = (e) => {
         e.preventDefault();
-        if (message.trim) {
+        if (message.trim()) {
             socket.emit("chat message", {
                 name,
                 message,
+                createdAt: Date.now(),
             });
             setMessage("");
         }
     };
 
+    const goBack = () => {
+        dispatch(setName(""));
+    };
+
     return (
         <div className="p-b-md p-r-md p-l-md">
-            <div className={styles["chat-window"]}>
+            <div id="messageContainer" className={styles["chat-window"]}>
+                <div className={styles["group-name"]}>
+                    <img
+                        onClick={goBack}
+                        src="/resources/back.svg"
+                        alt="back"
+                        style={{ cursor: "pointer" }}
+                    />
+                    <div>{chatroomName}</div>
+                    <div></div>
+                </div>
                 <div className={styles["message-container"]}>
                     {messages &&
                         messages.map((item) => (
-                            <div
-                                key={item._id}
-                                className={
-                                    item.name === name
-                                        ? `${styles["self-message"]} ${styles["messages"]}`
-                                        : styles.messages
-                                }
-                            >
-                                {item.name === name ? null : (
-                                    <h5>{item.name}</h5>
-                                )}
-                                <p>{item.message}</p>
-                            </div>
+                            <Chat name={name} item={item} />
                         ))}
                 </div>
                 <form className={styles.form} onSubmit={onSubmit}>

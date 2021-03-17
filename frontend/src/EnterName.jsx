@@ -3,22 +3,25 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
+import { setName } from "./redux/actions";
+import { useDispatch } from "react-redux";
+import { getChatrooms } from "./redux/actions";
+import { askForPermissioToReceiveNotifications } from "./push-notification";
 
-export default ({ setName, setChatroomId }) => {
+export default ({ chatroomId }) => {
     const [inputName, setInputName] = useState("");
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        axios({
-            method: "get",
-            url: "http://localhost:5000/api/chat/allChatrooms",
-        }).then((res) => {
-            setChatroomId(res.data[0]._id);
-        });
+        dispatch(getChatrooms());
     }, []);
 
     const onSubmit = (e) => {
         e.preventDefault();
-        setName(inputName);
+        if (inputName) {
+            askForPermissioToReceiveNotifications(chatroomId);
+            dispatch(setName(inputName));
+        }
     };
     return (
         <Container>

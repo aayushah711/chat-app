@@ -1,17 +1,13 @@
 const mongoose = require("mongoose");
 
-const chatSchema = new mongoose.Schema(
+const SWTokenSchema = new mongoose.Schema(
     {
         name: {
             type: String,
             required: true,
         },
-        message: {
+        serviceWorkerToken: {
             type: String,
-            required: true,
-        },
-        createdAt: {
-            type: Date,
             required: true,
         },
     },
@@ -19,4 +15,4 @@ const chatSchema = new mongoose.Schema(
     { versionKey: false }
 );
 
-module.exports = mongoose.model("Chat", chatSchema);
+module.exports = mongoose.model("SWToken", SWTokenSchema);
