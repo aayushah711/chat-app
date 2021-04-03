@@ -52,15 +52,14 @@ export default ({ name, chatroomId, chatroomName }) => {
     return (
         <div className="p-b-md p-r-md p-l-md">
             <div id="messageContainer" className={styles["chat-window"]}>
-                <div className={styles["group-name"]}>
+                <div className={styles["group-name-container"]}>
                     <img
                         onClick={goBack}
                         src="/resources/back.svg"
                         alt="back"
-                        style={{ cursor: "pointer" }}
+                        className={styles["back"]}
                     />
-                    <div>{chatroomName}</div>
-                    <div></div>
+                    <div className={styles["group-name"]}>{chatroomName}</div>
                 </div>
                 <div className={styles["message-container"]}>
                     {messages &&

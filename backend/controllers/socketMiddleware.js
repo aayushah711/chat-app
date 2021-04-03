@@ -1,11 +1,12 @@
 const Chat = require("../models/Chat");
 const Chatroom = require("../models/Chatroom");
+const SWToken = require("../models/SWToken");
 const axios = require("axios");
 const dotenv = require("dotenv");
 
 dotenv.config();
 
-const middleware = (socket, io) => {
+const middleware = async (socket, io) => {
     socket.on("chat message", async (msg) => {
         const chat = new Chat(msg);
         chat.save((err) => {
@@ -25,30 +26,55 @@ const middleware = (socket, io) => {
         });
 
         // use FCM for sw
-        let serviceWorkerTokens = chatroom.serviceWorkerTokens;
-        for (let i = 0; i < serviceWorkerTokens.length; i++) {
-            axios({
-                method: "post",
-                url: "https://fcm.googleapis.com/fcm/send",
-                data: {
-                    notification: {
-                        title: chat.name,
-                        body: chat.message,
-                        icon:
-                            "https://cdn6.aptoide.com/imgs/f/e/b/feb715e42bb4ff2d3961c3f57cc97573_icon.png?w=240",
-                        click_action: "/",
-                    },
-                    to: serviceWorkerTokens[i],
+        let members = chatroom.members;
+
+        let serviceWorkerTokens;
+
+        let serviceWorkerTokenDocuments = await SWToken.find(
+            {
+                memberName: {
+                    $in: members,
                 },
-                headers: {
-                    authorization: process.env.FCM_KEY,
+            },
+            { serviceWorkerToken: 1, _id: 0 },
+            (err, serviceWorkerTokenDocuments) => {
+                if (err) {
+                    console.log("err", err);
+                    // handle err
+                }
+
+                serviceWorkerTokens = serviceWorkerTokenDocuments.map(
+                    (item) => {
+                        return item.serviceWorkerToken;
+                    }
+                );
+                return serviceWorkerTokens;
+            }
+        );
+
+        axios({
+            method: "post",
+            url: "https://fcm.googleapis.com/fcm/send",
+            data: {
+                notification: {
+                    title: chat.name,
+                    body: chat.message,
+                    icon:
+                        "https://cdn6.aptoide.com/imgs/f/e/b/feb715e42bb4ff2d3961c3f57cc97573_icon.png?w=240",
+                    click_action: "/",
                 },
+                registration_ids: serviceWorkerTokens,
+            },
+            headers: {
+                authorization: process.env.FCM_KEY,
+            },
+        })
+            .then((res) => {
+                console.log(res.data);
             })
-                .then((res) => console.log(res.data))
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
+            .catch((err) => {
+                console.log(err);
+            });
 
         io.emit("chat message", chat);
     });

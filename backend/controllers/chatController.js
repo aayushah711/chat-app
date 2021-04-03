@@ -1,4 +1,5 @@
 const Chatroom = require("../models/Chatroom");
+const SWToken = require("../models/SWToken");
 
 const getAllChatrooms = async (req, res) => {
     try {
@@ -29,37 +30,39 @@ const getAllChats = async (req, res) => {
 
 const addSWToken = async (req, res) => {
     try {
-        const { chatroomId, swToken } = req.body;
-        let chatroom = await Chatroom.findById(chatroomId, (err) => {
-            if (err) {
-                console.log(err);
-                return res
-                    .status(400)
-                    .send({ err: "ChatroomId doesn't exist." });
+        const { chatroomId, memberName, swToken } = req.body;
+
+        let chatroom = await Chatroom.findById(chatroomId).exec();
+        if (!chatroom) {
+            return res.status(400).send({ err: "ChatroomId doesn't exist." });
+        }
+
+        await SWToken.findOneAndUpdate(
+            { memberName },
+            { memberName, serviceWorkerToken: swToken },
+            { upsert: true },
+            (err, doc) => {
+                if (err) {
+                    return res.status(500).send({
+                        err: "Could not add service worker token",
+                    });
+                }
             }
-        });
-
-        let swTokenExists = chatroom.serviceWorkerTokens.includes(swToken);
-
-        if (swTokenExists) {
-            return res
-                .status(200)
-                .send({ message: "Service worker token already exists!" });
-        } else {
-            chatroom.serviceWorkerTokens.push(swToken);
+        );
+        let memberExists = chatroom.members.includes(memberName);
+        if (!memberExists) {
+            chatroom.members.push(memberName);
             chatroom.save((err) => {
                 if (err) {
                     console.log(err);
-                    return res
-                        .status(400)
-                        .send({ err: "Could not add service worker token" });
-                } else {
-                    return res.status(200).send({
-                        message: "Service worker token added successfully!",
+                    return res.status(400).send({
+                        err:
+                            "Something went wrong while adding member to chatroom",
                     });
                 }
             });
         }
+        return res.send({ message: "Service worker token updated!" });
     } catch (error) {
         console.log(error);
         return res.status(400).send(error);

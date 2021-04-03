@@ -6,7 +6,7 @@
 }
 
 .form {
-    background: rgba(0, 0, 0, 0.15);
+    background: #c6d2d9;
     padding: 0.25rem;
     position: fixed;
     bottom: 0;
@@ -15,7 +15,6 @@
     display: flex;
     height: 3rem;
     box-sizing: border-box;
-    backdrop-filter: blur(10px);
     max-width: 600px;
     margin: auto;
 }
@@ -60,19 +59,25 @@
     border-radius: 20px 20px 0px 20px;
 }
 .chat-window {
+    position: relative;
     max-width: 600px;
     margin: auto;
     overflow: scroll;
     height: 100vh;
 }
 
-.group-name {
+.group-name-container {
     position: fixed;
-    width: 600px;
+    top: 0;
+    left: 0;
+    right: 0;
+    max-width: 600px;
+    margin: auto;
     height: 50px;
     background: linear-gradient(180deg, #3081b8, #2980b9);
     backdrop-filter: blur(10px);
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
@@ -80,7 +85,14 @@
     font-weight: 700;
     color: white;
 }
+.back {
+    cursor: pointer;
+}
 
+.group-name {
+    text-align: center;
+    flex: 1;
+}
 /* Hide scrollbar for Chrome, Safari and Opera */
 .chat-window::-webkit-scrollbar {
     display: none;

@@ -15,7 +15,7 @@ export const initializeFirebase = () => {
     });
 };
 
-export const askForPermissioToReceiveNotifications = (chatroomId) => {
+export const askForPermissioToReceiveNotifications = (chatroomId, name) => {
     const messaging = firebase.messaging();
     messaging
         .requestPermission()
@@ -30,6 +30,7 @@ export const askForPermissioToReceiveNotifications = (chatroomId) => {
                 url: "api/chat/addSWToken",
                 data: {
                     chatroomId,
+                    memberName: name,
                     swToken: token,
                 },
             });

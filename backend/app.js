@@ -15,7 +15,12 @@ app.use(express.json());
 const db = mongoose.connection;
 mongoose.connect(
     "mongodb://localhost/chatapp",
-    { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true },
+    {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+    },
     (err) => {
         if (err) {
             console.log(err);
@@ -35,11 +40,13 @@ db.once("open", async (req, res) => {
         {
             name: "ShareChat",
             chats: [],
-            serviceWorkerTokens: [],
+            members: [],
         },
     ])
         .then(() => console.log("Chatroom added Successfully"))
-        .catch((err) => console.log(`Error : ${err}`));
+        .catch((err) => {
+            console.log(`Error : ${err}`);
+        });
 });
 
 const options = {

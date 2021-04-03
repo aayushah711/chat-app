@@ -19,7 +19,7 @@ export default ({ chatroomId }) => {
     const onSubmit = (e) => {
         e.preventDefault();
         if (inputName) {
-            askForPermissioToReceiveNotifications(chatroomId);
+            askForPermissioToReceiveNotifications(chatroomId, inputName);
             dispatch(setName(inputName));
         }
     };

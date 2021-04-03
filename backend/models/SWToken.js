@@ -2,9 +2,10 @@ const mongoose = require("mongoose");
 
 const SWTokenSchema = new mongoose.Schema(
     {
-        name: {
+        memberName: {
             type: String,
             required: true,
+            index: true,
         },
         serviceWorkerToken: {
             type: String,

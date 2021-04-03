@@ -10,7 +10,7 @@ const chatroomSchema = new mongoose.Schema(
             type: Array,
             required: true,
         },
-        serviceWorkerTokens: {
+        members: {
             type: Array,
             required: true,
         },
